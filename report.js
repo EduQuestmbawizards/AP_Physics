@@ -16,7 +16,7 @@ function generatePDFReport(result, shouldSave = true) {
   // Header
   rect(0,0,W,26,13,13,20);
   rect(0,0,6,26,79,70,229);
-  txt('AP Physics 2 — Section I Diagnostic', W/2,12,15,true,[255,255,255],'center');
+  txt('AP Physics C — Section I Diagnostic', W/2,12,15,true,[255,255,255],'center');
   txt('Official Performance Report', W/2,20,9,false,[180,180,210],'center');
   y = 32;
 
@@ -104,7 +104,7 @@ function generatePDFReport(result, shouldSave = true) {
   // Footer
   if (y > 270) { doc.addPage(); y = 20; }
   line(M,y+4,W-M,y+4);
-  txt('AP Physics 2 Diagnostic Portal', W/2,y+9,7,false,[150,150,150],'center');
+  txt('AP Physics C Diagnostic Portal', W/2,y+9,7,false,[150,150,150],'center');
   txt(`© ${new Date().getFullYear()} – Confidential`, W/2,y+13,7,false,[180,180,180],'center');
 
   if (shouldSave) doc.save(`${result.student.name.replace(/\s+/g,'_')}_APPhysics2_Report.pdf`);
