@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP Physics 2 – Section I Diagnostic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="questions.js"></script>
+<style>
+:root {
+  --ink:     #0d0d14;
+  --ink2:    #2a2a3a;
+  --muted:   #6b6b82;
+  --border:  #e2e2ee;
+  --surface: #f7f7fc;
+  --white:   #ffffff;
+  --accent:  #4f46e5;
+  --accent2: #7c3aed;
+  --green:   #059669;
+  --red:     #dc2626;
+  --amber:   #d97706;
+  --glow:    rgba(79,70,229,0.12);
+  --r:       12px;
+  --shadow:  0 2px 20px rgba(13,13,20,0.08);
+  --shadow2: 0 8px 40px rgba(13,13,20,0.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface);color:var(--ink);min-height:100vh;line-height:1.6}
+h1,h2,h3,h4{font-family:'Syne',sans-serif;letter-spacing:-0.02em}
+
+/* ─── HEADER ─── */
+.hdr{background:var(--ink);color:#fff;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.3)}
+.hdr-brand{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700}
+.hdr-pill{background:var(--accent);border-radius:6px;padding:3px 10px;font-size:0.75rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
+.timer{font-family:'IBM Plex Mono',monospace;font-size:1rem;font-weight:500;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:6px 14px;display:none;align-items:center;gap:8px}
+.timer.warn{background:rgba(220,38,38,0.25);border-color:rgba(220,38,38,0.5);animation:throb 1s ease-in-out infinite}
+@keyframes throb{0%,100%{opacity:1}50%{opacity:.65}}
+
+/* ─── PAGES ─── */
+.page{display:none}.page.active{display:block}
+
+/* ─── REGISTRATION ─── */
+.reg-wrap{max-width:460px;margin:64px auto;padding:20px}
+.reg-card{background:var(--white);border-radius:20px;box-shadow:var(--shadow2);overflow:hidden}
+.reg-top{background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);padding:36px 32px 28px;color:#fff;text-align:center}
+.reg-top .icon{font-size:2.4rem;display:block;margin-bottom:10px}
+.reg-top h2{font-size:1.8rem;margin-bottom:4px}
+.reg-top p{opacity:.85;font-size:0.9rem}
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+.stat-strip .s{background:var(--white);padding:14px 6px;text-align:center}
+.stat-strip .s .val{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent)}
+.stat-strip .s .lbl{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.reg-body{padding:28px 32px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:0.82rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.field input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-family:inherit;font-size:0.95rem;outline:none;transition:border .2s,box-shadow .2s;background:var(--surface)}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow);background:var(--white)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 24px;border-radius:8px;font-family:'IBM Plex Sans',sans-serif;font-size:0.94rem;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff;width:100%}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 20px rgba(79,70,229,0.35)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--ink2)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);background:var(--glow)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#b91c1c}
+.btn-success{background:var(--green);color:#fff}
+
+/* ─── TEST LAYOUT ─── */
+.test-wrap{max-width:1080px;margin:20px auto;padding:0 16px;display:grid;grid-template-columns:1fr 252px;gap:18px}
+@media(max-width:760px){.test-wrap{grid-template-columns:1fr}.sidebar{order:-1}}
+
+/* ─── Q CARD ─── */
+.q-card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:28px 32px}
+.q-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.q-badge{font-family:'IBM Plex Mono',monospace;background:var(--ink);color:#fff;border-radius:6px;padding:4px 12px;font-size:0.8rem;font-weight:500}
+.q-topic-tag{font-size:0.78rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:4px 10px;border-radius:20px}
+.q-image{margin-bottom:18px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;text-align:center;padding:8px}
+.q-image img{max-width:100%;max-height:340px;object-fit:contain;border-radius:6px}
+.q-text{font-size:1rem;line-height:1.75;margin-bottom:22px;color:var(--ink2)}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;background:var(--white)}
+.opt:hover{border-color:var(--accent);background:var(--glow)}
+.opt.selected{border-color:var(--accent);background:var(--glow)}
+.opt-letter{width:28px;height:28px;min-width:28px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;font-weight:600;color:var(--muted);transition:all .15s;flex-shrink:0}
+.opt.selected .opt-letter{background:var(--accent);border-color:var(--accent);color:#fff}
+.opt-text{font-size:0.93rem;line-height:1.55;padding-top:4px}
+.q-nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px;gap:10px}
+
+/* ─── SIDEBAR ─── */
+.palette-card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+.palette-card h3{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:14px;color:var(--ink)}
+.pal-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.pb{aspect-ratio:1;border-radius:6px;border:none;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:500;cursor:pointer;background:var(--surface);color:var(--muted);border:1px solid var(--border);transition:all .12s}
+.pb:hover{border-color:var(--accent);color:var(--accent)}
+.pb.done{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pb.cur{outline:2.5px solid var(--ink);outline-offset:2px}
+.legend{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.leg{display:flex;align-items:center;gap:8px;font-size:0.78rem;color:var(--muted)}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.prog-wrap{margin-top:12px}
+.prog-bg{height:6px;background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.prog-fill{height:100%;background:var(--accent);border-radius:10px;transition:width .3s}
+.prog-lbl{font-size:0.76rem;color:var(--muted);margin-top:5px;text-align:right}
+
+/* ─── MODAL ─── */
+.modal-bg{position:fixed;inset:0;background:rgba(13,13,20,0.6);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-bg.open{display:flex}
+.modal{background:var(--white);border-radius:16px;padding:36px 32px;max-width:400px;width:90%;text-align:center;box-shadow:var(--shadow2)}
+.modal h3{font-size:1.3rem;margin-bottom:8px}
+.modal p{color:var(--muted);margin-bottom:24px;font-size:0.92rem}
+.modal-btns{display:flex;gap:10px;justify-content:center}
+
+/* ─── RESULTS ─── */
+.res-wrap{max-width:880px;margin:28px auto;padding:0 16px 64px}
+.res-hero{background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);color:#fff;border-radius:20px;padding:40px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:rgba(79,70,229,.25)}
+.grade{font-family:'Syne',sans-serif;font-size:4.5rem;font-weight:800;line-height:1;margin-bottom:6px;position:relative}
+.score-line{font-size:1.3rem;font-weight:600;margin-bottom:4px;position:relative}
+.score-sub{opacity:.7;font-size:0.88rem;position:relative}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+@media(max-width:580px){.stats-row{grid-template-columns:1fr 1fr}}
+.stat-card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;text-align:center}
+.stat-card .num{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800}
+.stat-card .lbl{font-size:0.76rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+.stat-card.c .num{color:var(--green)}
+.stat-card.w .num{color:var(--red)}
+.stat-card.s .num{color:var(--amber)}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+@media(max-width:580px){.charts-row{grid-template-columns:1fr}}
+.chart-card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:22px}
+.chart-card h3{font-size:0.9rem;font-weight:700;margin-bottom:14px;color:var(--ink)}
+.topic-tbl{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:22px;margin-bottom:18px;overflow-x:auto}
+.topic-tbl h3{font-size:0.9rem;font-weight:700;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:0.86rem}
+th{background:var(--surface);color:var(--muted);font-weight:600;padding:9px 12px;text-align:left;border-bottom:1.5px solid var(--border);font-size:0.78rem;text-transform:uppercase;letter-spacing:.04em}
+td{padding:9px 12px;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface)}
+.bar-wrap{height:6px;background:var(--surface);border-radius:10px;min-width:60px;overflow:hidden;border:1px solid var(--border)}
+.bar-fill{height:100%;border-radius:10px}
+.inc-review{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:24px;margin-bottom:18px}
+.inc-review h3{font-size:0.9rem;font-weight:700;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);padding-bottom:12px}
+.inc-q{border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:14px}
+.inc-q:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.inc-q h4{font-size:0.93rem;font-weight:600;margin-bottom:8px;line-height:1.55}
+.inc-row{font-size:0.88rem;display:flex;align-items:flex-start;gap:8px;padding:3px 0}
+.inc-row .label{font-weight:600;min-width:100px;flex-shrink:0}
+.inc-row.wrong{color:var(--red)}
+.inc-row.right{color:var(--green)}
+.res-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-brand">
+    <span>⚛️</span>
+    <span>AP Physics 2</span>
+    <span class="hdr-pill">Section I</span>
+  </div>
+  <div class="timer" id="timerBox">
+    <span>⏱</span>
+    <span id="timerDisplay">80:00</span>
+  </div>
+</header>
+
+<!-- PAGE 1: REGISTRATION -->
+<div class="page active" id="pageReg">
+  <div class="reg-wrap">
+    <div class="reg-card">
+      <div class="reg-top">
+        <span class="icon">⚛️</span>
+        <h2>AP Physics 2</h2>
+        <p>Section I Diagnostic · Multiple Choice</p>
+      </div>
+      <div class="stat-strip">
+        <div class="s"><div class="val">40</div><div class="lbl">Questions</div></div>
+        <div class="s"><div class="val">80</div><div class="lbl">Minutes</div></div>
+        <div class="s"><div class="val">7</div><div class="lbl">Topics</div></div>
+        <div class="s"><div class="val">MCQ</div><div class="lbl">Format</div></div>
+      </div>
+      <div class="reg-body">
+        <div class="field">
+          <label>Full Name</label>
+          <input type="text" id="regName" placeholder="Enter your full name" autocomplete="name">
+        </div>
+        <div class="field">
+          <label>Email Address</label>
+          <input type="email" id="regEmail" placeholder="Enter your email" autocomplete="email">
+        </div>
+        <div class="field">
+          <label>Phone Number</label>
+          <input type="tel" id="regPhone" placeholder="Enter your phone number" autocomplete="tel">
+        </div>
+        <button class="btn btn-primary" onclick="startTest()">Begin Test →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: TEST -->
+<div class="page" id="pageTest">
+  <div class="test-wrap">
+    <div>
+      <div class="q-card">
+        <div class="q-meta">
+          <span class="q-badge" id="qNum">Q 1 / 40</span>
+          <span class="q-topic-tag" id="qTopic"></span>
+        </div>
+        <div class="q-image" id="qImage" style="display:none">
+          <img id="qImg" src="" alt="Question diagram">
+        </div>
+        <div class="q-text" id="qText"></div>
+        <div class="opts" id="qOpts"></div>
+        <div class="q-nav">
+          <button class="btn btn-outline" id="btnPrev" onclick="navigate(-1)" style="display:none">← Prev</button>
+          <div style="flex:1"></div>
+          <button class="btn btn-outline" id="btnNext" onclick="navigate(1)">Next →</button>
+          <button class="btn btn-danger" id="btnSubmit" onclick="confirmSubmit()" style="display:none">Submit Test</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="palette-card">
+        <h3>Question Navigator</h3>
+        <div class="pal-grid" id="palette"></div>
+        <div class="legend">
+          <div class="leg"><div class="leg-dot" style="background:var(--accent)"></div>Answered</div>
+          <div class="leg"><div class="leg-dot" style="background:var(--surface);border:1px solid var(--border)"></div>Unanswered</div>
+        </div>
+        <div class="prog-wrap">
+          <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+          <div class="prog-lbl" id="progLbl">0 / 40</div>
+        </div>
+      </div>
+      <button class="btn btn-danger" style="width:100%" onclick="confirmSubmit()">🏁 Submit Test</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: RESULTS -->
+<div class="page" id="pageResult">
+  <div class="res-wrap" id="resWrap"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h3 id="modalTitle">Submit Test?</h3>
+    <p id="modalMsg"></p>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="submitTest()">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<script src="email.js"></script>
+<script src="report.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
